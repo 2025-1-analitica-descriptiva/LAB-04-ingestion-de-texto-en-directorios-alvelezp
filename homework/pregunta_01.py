@@ -4,7 +4,20 @@
 """
 Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 """
+import os
+import pandas as pd
 
+def create_dataset(data_type):
+        dataset = []
+        for sentiment in ['positive', 'negative', 'neutral']:
+            sentiment_dir = os.path.join('files/input', data_type, sentiment)
+            for filename in os.listdir(sentiment_dir):
+                if filename.endswith('.txt'):
+                    file_path = os.path.join(sentiment_dir, filename)
+                    with open(file_path, 'r', encoding='utf-8') as file:
+                        phrase = file.read().strip()
+                        dataset.append({'phrase': phrase, 'target': sentiment})
+        return pd.DataFrame(dataset)
 
 def pregunta_01():
     """
@@ -71,3 +84,10 @@ def pregunta_01():
 
 
     """
+    os.makedirs('files/output', exist_ok=True)
+
+    train_df = create_dataset('train')
+    test_df = create_dataset('test')
+
+    train_df.to_csv(os.path.join('files/output', 'train_dataset.csv'), index=False)
+    test_df.to_csv(os.path.join('files/output', 'test_dataset.csv'), index=False)
